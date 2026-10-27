@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* Custom Cinema Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #272f45;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #f43f5e;
+}
+
+/* Glow effects */
+.glow-rose {
+  box-shadow: 0 0 25px -5px rgba(244, 63, 94, 0.4);
+}
+
+.glow-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glow-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px -10px rgba(244, 63, 94, 0.25);
+}
+
+/* Curved Cinema Screen */
+.cinema-screen-curve {
+  border-top: 4px solid #f43f5e;
+  border-radius: 50% 50% 0 0 / 25px 25px 0 0;
+  box-shadow: 0 -8px 24px -4px rgba(244, 63, 94, 0.35);
+}
