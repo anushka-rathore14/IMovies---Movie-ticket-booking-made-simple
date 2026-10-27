@@ -1,5 +1,10 @@
 # 🎬 IMovies - Movie Ticket Booking Made Simple
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Online-success?style=for-the-badge&logo=vercel)](https://anushka-rathore14.github.io/IMovies---Movie-ticket-booking-made-simple/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/anushka-rathore14/IMovies---Movie-ticket-booking-made-simple)
+
+> **Live Demo URL**: [https://anushka-rathore14.github.io/IMovies---Movie-ticket-booking-made-simple/](https://anushka-rathore14.github.io/IMovies---Movie-ticket-booking-made-simple/)
+
 [![MERN Stack](https://img.shields.io/badge/Stack-MERN-rose.svg)](https://github.com/anushka-rathore14/IMovies---Movie-ticket-booking-made-simple)
 [![Node.js](https://img.shields.io/badge/Node.js-v18+-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-18-blue.svg)](https://reactjs.org/)
