@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../api/axiosClient';
+import { dbService } from '../../services/dbService';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { Calendar, Plus, Trash2, ChevronLeft, X, Film, Building } from 'lucide-react';
 
@@ -24,16 +24,16 @@ const ManageShows = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [showsRes, moviesRes, theatresRes] = await Promise.all([
-        api.get('/shows'),
-        api.get('/movies?limit=50'),
-        api.get('/theatres'),
+      const [showsData, moviesData, theatresData] = await Promise.all([
+        dbService.getShows(),
+        dbService.getMovies({ limit: 50 }),
+        dbService.getTheatres(),
       ]);
-      setShows(showsRes.data.shows || []);
-      setMovies(moviesRes.data.movies || []);
-      setTheatres(theatresRes.data.theatres || []);
-      if (moviesRes.data.movies?.length > 0) setSelectedMovie(moviesRes.data.movies[0]._id);
-      if (theatresRes.data.theatres?.length > 0) setSelectedTheatre(theatresRes.data.theatres[0]._id);
+      setShows(showsData.shows || []);
+      setMovies(moviesData.movies || []);
+      setTheatres(theatresData || []);
+      if (moviesData.movies?.length > 0) setSelectedMovie(moviesData.movies[0]._id);
+      if (theatresData?.length > 0) setSelectedTheatre(theatresData[0]._id);
     } catch (err) {
       console.error('Failed to load shows:', err);
     } finally {
@@ -48,7 +48,7 @@ const ManageShows = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/shows', {
+      await dbService.createShow({
         movie: selectedMovie,
         theatre: selectedTheatre,
         screenNumber: 1,
@@ -64,17 +64,17 @@ const ManageShows = () => {
       setIsModalOpen(false);
       fetchData();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to schedule show');
+      alert(err.message || 'Failed to schedule show');
     }
   };
 
   const handleDelete = async (showId) => {
     if (!window.confirm('Are you sure you want to delete this show?')) return;
     try {
-      await api.delete(`/shows/${showId}`);
+      await dbService.deleteShow(showId);
       fetchData();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete show');
+      alert(err.message || 'Failed to delete show');
     }
   };
 

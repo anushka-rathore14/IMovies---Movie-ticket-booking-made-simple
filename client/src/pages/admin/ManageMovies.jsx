@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../api/axiosClient';
+import { dbService } from '../../services/dbService';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { Film, Plus, Trash2, Edit2, ChevronLeft, X, Check } from 'lucide-react';
 
@@ -26,8 +26,8 @@ const ManageMovies = () => {
   const fetchMovies = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/movies?limit=50');
-      setMovies(res.data.movies || []);
+      const data = await dbService.getMovies({ limit: 50 });
+      setMovies(data.movies || []);
     } catch (err) {
       console.error('Failed to load movies:', err);
     } finally {
@@ -89,24 +89,24 @@ const ManageMovies = () => {
 
     try {
       if (editingMovie) {
-        await api.put(`/movies/${editingMovie._id}`, payload);
+        await dbService.updateMovie(editingMovie._id, payload);
       } else {
-        await api.post('/movies', payload);
+        await dbService.createMovie(payload);
       }
       setIsModalOpen(false);
       fetchMovies();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to save movie');
+      alert(err.message || 'Failed to save movie');
     }
   };
 
   const handleDelete = async (movieId) => {
     if (!window.confirm('Are you sure you want to delete this movie?')) return;
     try {
-      await api.delete(`/movies/${movieId}`);
+      await dbService.deleteMovie(movieId);
       fetchMovies();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete movie');
+      alert(err.message || 'Failed to delete movie');
     }
   };
 

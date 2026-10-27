@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import api from '../api/axiosClient';
+import { dbService } from '../services/dbService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import TrailerModal from '../components/TrailerModal';
 import { useCity } from '../context/CityContext';
@@ -48,8 +48,8 @@ const MovieDetails = () => {
     const fetchMovie = async () => {
       setLoading(true);
       try {
-        const res = await api.get(`/movies/${id}`);
-        setMovie(res.data.movie);
+        const m = await dbService.getMovieById(id);
+        setMovie(m);
       } catch (err) {
         console.error('Failed to load movie:', err);
       } finally {
@@ -64,8 +64,12 @@ const MovieDetails = () => {
     const fetchShows = async () => {
       setShowsLoading(true);
       try {
-        const res = await api.get(`/shows?movie=${id}&date=${selectedDate}&city=${city}`);
-        setGroupedTheatres(res.data.groupedTheatres || []);
+        const data = await dbService.getShows({
+          movie: id,
+          date: selectedDate,
+          city,
+        });
+        setGroupedTheatres(data.groupedTheatres || []);
       } catch (err) {
         console.error('Failed to fetch shows:', err);
       } finally {

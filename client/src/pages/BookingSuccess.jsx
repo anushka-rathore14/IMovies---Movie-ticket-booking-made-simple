@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import confetti from 'canvas-confetti';
-import api from '../api/axiosClient';
+import { dbService } from '../services/dbService';
 import TicketCard from '../components/TicketCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { CheckCircle2, Ticket, ArrowRight, Film } from 'lucide-react';
@@ -24,8 +24,8 @@ const BookingSuccess = () => {
       if (!booking) {
         setLoading(true);
         try {
-          const res = await api.get(`/bookings/${bookingId}`);
-          setBooking(res.data.booking);
+          const b = await dbService.getBookingById(bookingId);
+          setBooking(b);
         } catch (err) {
           console.error('Failed to load booking details:', err);
         } finally {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import api from '../api/axiosClient';
+import { dbService } from '../services/dbService';
 import MovieCard from '../components/MovieCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Search, Filter, SlidersHorizontal, Film } from 'lucide-react';
@@ -46,19 +46,18 @@ const Movies = () => {
     const fetchMovies = async () => {
       setLoading(true);
       try {
-        const params = new URLSearchParams();
-        if (search) params.append('search', search);
-        if (genre !== 'All') params.append('genre', genre);
-        if (language !== 'All') params.append('language', language);
-        if (format !== 'All') params.append('format', format);
-        if (sort) params.append('sort', sort);
-        params.append('page', page);
-        params.append('limit', 12);
-
-        const res = await api.get(`/movies?${params.toString()}`);
-        setMovies(res.data.movies || []);
-        setTotal(res.data.total || 0);
-        setTotalPages(res.data.totalPages || 1);
+        const data = await dbService.getMovies({
+          search,
+          genre,
+          language,
+          format,
+          sort,
+          page,
+          limit: 12,
+        });
+        setMovies(data.movies || []);
+        setTotal(data.total || 0);
+        setTotalPages(data.totalPages || 1);
       } catch (err) {
         console.error('Failed to load movies:', err);
       } finally {

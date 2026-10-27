@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../api/axiosClient';
+import { dbService } from '../../services/dbService';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import {
   DollarSign,
@@ -24,10 +24,10 @@ const AdminDashboard = () => {
     const fetchAdminStats = async () => {
       setLoading(true);
       try {
-        const res = await api.get('/admin/stats');
-        setStats(res.data.stats);
-        setRecentBookings(res.data.recentBookings || []);
-        setRevenueByMovie(res.data.revenueByMovie || []);
+        const data = await dbService.getAdminStats();
+        setStats(data.stats);
+        setRecentBookings(data.recentBookings || []);
+        setRevenueByMovie(data.revenueByMovie || []);
       } catch (err) {
         console.error('Failed to load admin stats:', err);
       } finally {

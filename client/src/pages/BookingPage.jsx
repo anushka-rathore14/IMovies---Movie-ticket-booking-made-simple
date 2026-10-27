@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../api/axiosClient';
+import { dbService } from '../services/dbService';
 import { useAuth } from '../context/AuthContext';
 import SeatGrid from '../components/SeatGrid';
 import SeatLegend from '../components/SeatLegend';
@@ -33,8 +33,8 @@ const BookingPage = () => {
     const fetchShowDetails = async () => {
       setLoading(true);
       try {
-        const res = await api.get(`/shows/${showId}`);
-        setShow(res.data.show);
+        const data = await dbService.getShowById(showId);
+        setShow(data);
       } catch (err) {
         console.error('Failed to load show details:', err);
       } finally {
@@ -74,17 +74,17 @@ const BookingPage = () => {
     setIsProcessing(true);
     setBookingError('');
     try {
-      const res = await api.post('/bookings', {
+      const booking = await dbService.createBooking({
         showId,
         seatNumbers: selectedSeats.map((s) => s.seatNumber),
         paymentMethod,
+        user,
       });
 
-      const booking = res.data.booking;
       setIsCheckoutOpen(false);
       navigate(`/booking/success/${booking._id}`, { state: { booking } });
     } catch (err) {
-      setBookingError(err.response?.data?.message || 'Payment processing failed. Please try again.');
+      setBookingError(err.message || 'Payment processing failed. Please try again.');
       setIsProcessing(false);
     }
   };

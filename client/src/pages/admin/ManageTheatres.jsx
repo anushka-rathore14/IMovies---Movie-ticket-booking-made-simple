@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../api/axiosClient';
+import { dbService } from '../../services/dbService';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { Building, Plus, Trash2, ChevronLeft, X, MapPin } from 'lucide-react';
 
@@ -18,8 +18,8 @@ const ManageTheatres = () => {
   const fetchTheatres = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/theatres');
-      setTheatres(res.data.theatres || []);
+      const data = await dbService.getTheatres();
+      setTheatres(data || []);
     } catch (err) {
       console.error('Failed to load theatres:', err);
     } finally {
@@ -34,7 +34,7 @@ const ManageTheatres = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/theatres', {
+      await dbService.createTheatre({
         name,
         city,
         address,
@@ -48,17 +48,17 @@ const ManageTheatres = () => {
       setAddress('');
       fetchTheatres();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to add theatre');
+      alert(err.message || 'Failed to add theatre');
     }
   };
 
   const handleDelete = async (theatreId) => {
     if (!window.confirm('Are you sure you want to delete this theatre?')) return;
     try {
-      await api.delete(`/theatres/${theatreId}`);
+      await dbService.deleteTheatre(theatreId);
       fetchTheatres();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete theatre');
+      alert(err.message || 'Failed to delete theatre');
     }
   };
 

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api/axiosClient';
+import { dbService } from '../services/dbService';
+import { useAuth } from '../context/AuthContext';
 import TicketCard from '../components/TicketCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Ticket, Film, Calendar, Clock, AlertCircle } from 'lucide-react';
 
 const MyBookings = () => {
+  const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'confirmed' | 'cancelled'
@@ -14,8 +16,8 @@ const MyBookings = () => {
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/bookings/my-bookings');
-      setBookings(res.data.bookings || []);
+      const data = await dbService.getMyBookings(user);
+      setBookings(data || []);
     } catch (err) {
       console.error('Failed to load bookings:', err);
     } finally {
@@ -25,7 +27,7 @@ const MyBookings = () => {
 
   useEffect(() => {
     fetchBookings();
-  }, []);
+  }, [user]);
 
   const handleCancelBooking = async (bookingId) => {
     if (!window.confirm('Are you sure you want to cancel this booking? Full refund will be initiated and seats will be released.')) {
@@ -33,12 +35,12 @@ const MyBookings = () => {
     }
 
     try {
-      await api.post(`/bookings/${bookingId}/cancel`);
+      await dbService.cancelBooking(bookingId);
       setActionMessage('Booking cancelled successfully. Refund initiated.');
       fetchBookings();
       setTimeout(() => setActionMessage(''), 4000);
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to cancel booking');
+      alert(err.message || 'Failed to cancel booking');
     }
   };
 

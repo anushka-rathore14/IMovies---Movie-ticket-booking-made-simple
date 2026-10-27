@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api/axiosClient';
+import { dbService } from '../services/dbService';
 import HeroBanner from '../components/HeroBanner';
 import MovieCard from '../components/MovieCard';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -18,10 +18,10 @@ const Home = () => {
     const fetchMovies = async () => {
       setLoading(true);
       try {
-        const res = await api.get('/movies?limit=12');
-        if (res.data.movies && res.data.movies.length > 0) {
-          setMovies(res.data.movies);
-          setFeaturedMovie(res.data.movies[0]);
+        const data = await dbService.getMovies({ limit: 12 });
+        if (data.movies && data.movies.length > 0) {
+          setMovies(data.movies);
+          setFeaturedMovie(data.movies[0]);
         }
       } catch (err) {
         console.error('Failed to load movies:', err);

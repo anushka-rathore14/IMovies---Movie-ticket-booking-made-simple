@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../api/axiosClient';
+import { dbService } from '../../services/dbService';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { Ticket, ChevronLeft, XCircle, Search, RefreshCw } from 'lucide-react';
 
@@ -13,11 +13,8 @@ const ManageBookings = () => {
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      const url = filterStatus
-        ? `/bookings?status=${filterStatus}&limit=100`
-        : '/bookings?limit=100';
-      const res = await api.get(url);
-      setBookings(res.data.bookings || []);
+      const data = await dbService.getMyBookings();
+      setBookings(data || []);
     } catch (err) {
       console.error('Failed to load bookings:', err);
     } finally {
@@ -32,12 +29,10 @@ const ManageBookings = () => {
   const handleAdminCancel = async (bookingId) => {
     if (!window.confirm('Cancel this customer booking and release seats back to inventory?')) return;
     try {
-      await api.post(`/bookings/${bookingId}/cancel`, {
-        reason: 'Cancelled by Administrator',
-      });
+      await dbService.cancelBooking(bookingId);
       fetchBookings();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to cancel booking');
+      alert(err.message || 'Failed to cancel booking');
     }
   };
 

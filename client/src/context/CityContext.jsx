@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '../api/axiosClient';
+import { dbService } from '../services/dbService';
 
 const CityContext = createContext();
 
@@ -11,9 +11,9 @@ export const CityProvider = ({ children }) => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const res = await api.get('/theatres/meta/cities');
-        if (res.data.cities && res.data.cities.length) {
-          setAvailableCities(res.data.cities);
+        const cities = await dbService.getCities();
+        if (cities && cities.length) {
+          setAvailableCities(cities);
         }
       } catch (e) {
         // use fallback cities

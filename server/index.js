@@ -98,6 +98,20 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     await connectDB();
+
+    // Auto-seed database if empty
+    try {
+      const Movie = require('./models/Movie');
+      const movieCount = await Movie.countDocuments();
+      if (movieCount === 0) {
+        console.log('🌱 Database is empty. Auto-seeding initial blockbuster movies...');
+        const seedDatabase = require('./scripts/seed');
+        await seedDatabase();
+      }
+    } catch (seedErr) {
+      console.warn('Auto-seed check notice:', seedErr.message);
+    }
+
     server.listen(PORT, () => {
       console.log(`🎬 IMovies Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
       console.log(`📡 Socket.io gateway active on ws://localhost:${PORT}`);
